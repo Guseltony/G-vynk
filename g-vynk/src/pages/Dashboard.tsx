@@ -76,7 +76,7 @@ const Dashboard = () => {
               <button
                 onClick={handleCreateMeeting}
                 disabled={isCreating}
-                className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-3.5 rounded-full shadow-md shadow-primary/20 flex items-center justify-centergap-2.5 transition-all cursor-pointer disabled:opacity-50 gap-2.5"
+                className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-3.5 rounded-full shadow-md shadow-primary/20 flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-50"
               >
                 <PlusIcon className="w-5 h-5" />
                 <span>{isCreating ? "Creating..." : "New Meeting"}</span>
