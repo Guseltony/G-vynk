@@ -1,0 +1,97 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { dummyRemoteParticipants } from "../assets/asset";
+import toast from "react-hot-toast";
+import type { RemoteParticipants, User } from "../types/user";
+
+const useWebRTC = (
+  user: User,
+  onMeetingEnded: (message: string) => void,
+  _roomId?: string,
+  _enabled: Boolean = true,
+) => {
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteUsers, setRemoteUsers] = useState<RemoteParticipants[]>(
+    dummyRemoteParticipants,
+  );
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+
+  const localStreamRef = useRef<MediaStream | null>(null);
+
+  // Initialize local camera stream if available
+  const initLocalStream = useCallback(async (isCancelled: () => boolean) => {
+    try {
+      if (navigator?.mediaDevices?.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        if (isCancelled()) {
+          stream.getTracks().forEach((track) => track.stop());
+          return null;
+        }
+        localStreamRef.current = stream;
+        setLocalStream(stream);
+        return stream;
+      }
+    } catch (_error) {
+      console.log("Mock WebRTC: Running in camera preview fallback mode");
+    }
+    return null;
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    initLocalStream(() => cancelled);
+
+    return () => {
+      cancelled = true;
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => track.stop());
+        localStreamRef.current = null;
+      }
+    };
+  }, [initLocalStream]);
+
+  // Toggle Local mic
+  const toggleAudio = () => {
+    const newState = !audioEnabled;
+    setAudioEnabled(newState);
+    if (localStreamRef.current) {
+      const audioTrack = localStreamRef.current.getAudioTracks()[0];
+      if (audioTrack) audioTrack.enabled = newState;
+    }
+    toast(newState ? "Microphone turned on" : "Microphone muted", {
+      icon: newState ? "🎤" : "🔇",
+    });
+  };
+  // Toggle local camera
+  const toggleVideo = () => {
+    const newState = !videoEnabled;
+    setVideoEnabled(newState);
+    if (localStreamRef.current) {
+      const videoTrack = localStreamRef.current.getVideoTracks()[0];
+      if (videoTrack) videoTrack.enabled = newState;
+    }
+    toast(newState ? "camera turned on" : "Camera turned off", {
+      icon: newState ? "" : "🔇",
+    });
+  };
+
+  const endMeeting = useCallback(() => {
+    if (onMeetingEnded) {
+      onMeetingEnded("Meeting ended");
+    }
+  }, [onMeetingEnded]);
+  return [
+    localStream,
+    remoteUsers,
+    audioEnabled,
+    videoEnabled,
+    toggleAudio,
+    toggleVideo,
+    endMeeting,
+  ] as const;
+};
+
+export default useWebRTC;
