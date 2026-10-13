@@ -41,7 +41,7 @@ const VideoTile = ({
             {name ? name.charAt(0) : <UserIcon className="w-8 h-8" />}
           </div>
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800/90 text-slate-300 border border-slate-700/60 flex items-center gap-1.5 shadow-xs">
-            <VideoOffIcon className="w-3.5 h-3.5 trat-rose-400" />
+            <VideoOffIcon className="w-3.5 h-3.5 text-rose-400" />
             camera Off
           </span>
         </div>
