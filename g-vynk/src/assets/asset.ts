@@ -1,5 +1,7 @@
 // Dummy data & assets for frontend
 
+import type { RemoteParticipants } from "../types/user";
+
 export const dummyUser = {
     id: "user_mock_001",
     fullName: "Alex Rivera",
@@ -191,31 +193,31 @@ export const dummyMeetingDetails = {
     },
 };
 
-export const dummyRemoteParticipants = [
-    {
-        socketId: "socket_sarah_002",
-        userId: "user_mock_002",
-        userName: "Sarah Chen",
-        stream: null,
-        audioEnabled: true,
-        videoEnabled: true,
-    },
-    {
-        socketId: "socket_marcus_003",
-        userId: "user_mock_003",
-        userName: "Marcus Vance",
-        stream: null,
-        audioEnabled: false,
-        videoEnabled: true,
-    },
-    {
-        socketId: "socket_elena_004",
-        userId: "user_mock_004",
-        userName: "Elena Rostova",
-        stream: null,
-        audioEnabled: true,
-        videoEnabled: false,
-    },
+export const dummyRemoteParticipants: RemoteParticipants[] = [
+  {
+    socketId: "socket_sarah_002",
+    userId: "user_mock_002",
+    userName: "Sarah Chen",
+    stream: null,
+    audioEnabled: true,
+    videoEnabled: true,
+  },
+  {
+    socketId: "socket_marcus_003",
+    userId: "user_mock_003",
+    userName: "Marcus Vance",
+    stream: null,
+    audioEnabled: false,
+    videoEnabled: true,
+  },
+  {
+    socketId: "socket_elena_004",
+    userId: "user_mock_004",
+    userName: "Elena Rostova",
+    stream: null,
+    audioEnabled: true,
+    videoEnabled: false,
+  },
 ];
 
 export const dummyInitialChatMessages = [
