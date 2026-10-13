@@ -19,13 +19,17 @@ const useWebRTC = (
   const localStreamRef = useRef<MediaStream | null>(null);
 
   // Initialize local camera stream if available
-  const initLocalStream = useCallback(async () => {
+  const initLocalStream = useCallback(async (isCancelled: () => boolean) => {
     try {
       if (navigator?.mediaDevices?.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: true,
         });
+        if (isCancelled()) {
+          stream.getTracks().forEach((track) => track.stop());
+          return null;
+        }
         localStreamRef.current = stream;
         setLocalStream(stream);
         return stream;
@@ -37,11 +41,14 @@ const useWebRTC = (
   }, []);
 
   useEffect(() => {
-    initLocalStream();
+    let cancelled = false;
+    initLocalStream(() => cancelled);
 
     return () => {
+      cancelled = true;
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => track.stop());
+        localStreamRef.current = null;
       }
     };
   }, [initLocalStream]);
