@@ -3,24 +3,29 @@ import { useNavigate, useParams } from "react-router-dom";
 import { dummyMeetingDetails, dummyUser } from "../assets/asset";
 import VideoGrid from "../components/meeting/VideoGrid";
 import useWebRTC from "../hooks/useWebRTC";
-import type { RemoteParticipants } from "../types/user";
+// import type { RemoteParticipants } from "../types/user";
+import ChatPanel from "../components/meeting/ChatPanel";
+import { useChat } from "../hooks/useChat";
+import ParticipantsList from "../components/meeting/ParticipantsList";
+import ControlBar from "../components/meeting/ControlBar";
+import toast from "react-hot-toast";
 
-type WebRTC = {
-  localStream: MediaStream;
-  remoteUsers: RemoteParticipants[];
-  audioEnabled: boolean;
-  videoEnabled: boolean;
-  toggleVideo: () => {};
-  toggleAudio: () => {};
-  endMeeting: () => {};
-};
+// type WebRTC = {
+//   localStream: MediaStream;
+//   remoteUsers: RemoteParticipants[];
+//   audioEnabled: boolean;
+//   videoEnabled: boolean;
+//   toggleVideo: () => {};
+//   toggleAudio: () => {};
+//   endMeeting: () => {};
+// };
 
 const MeetingRoom = () => {
   const { meetingId } = useParams();
   const navigate = useNavigate();
   const userdata = dummyUser;
 
-  const [isParticipantsOpen, setIsParticipantsOpen] = useState<Boolean>(false);
+  const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
 
   const handleMeetingEnded = useCallback(() => {
     navigate("/dashboard");
@@ -32,16 +37,28 @@ const MeetingRoom = () => {
     remoteUsers,
     audioEnabled,
     videoEnabled,
-    toggleVideo,
     toggleAudio,
+    toggleVideo,
     endMeeting,
   ] = useWebRTC(userdata, handleMeetingEnded, meetingId);
 
+  const [messages, sendMessage, unreadCount, isChatOpen, toggleChat] = useChat(
+    meetingId,
+    userdata,
+  );
+
   const isHost = true;
 
-  const handleLeave = () => {};
+  const handleLeave = () => {
+    toast('You left the meeting');
+    navigate("/dashboard")
+  };
 
-  const handleEndMeeting = () => {};
+  const handleEndMeeting = () => {
+    endMeeting()
+    toast("Meeting ended for all participants");
+    navigate("/dashboard")
+  };
 
   return (
     <div className="h-screen w-screen bg-slate-100 text-slate-900 flex flex-col overflow-hidden relative font-sans">
@@ -68,11 +85,48 @@ const MeetingRoom = () => {
         />
 
         {/* In-Meeting Chat Drawer */}
+        <ChatPanel
+          isOpen={isChatOpen}
+          onClose={toggleChat}
+          messages={messages}
+          onSendMessage={sendMessage}
+          currentUser={userdata}
+        />
 
         {/* Participants Drawer */}
 
-        {/* Bottom Floating Control Bar */}
+        <ParticipantsList
+          isOpen={isParticipantsOpen}
+          onClose={() => setIsParticipantsOpen(false)}
+          localUser={userdata}
+          localAudio={audioEnabled}
+          localVideo={videoEnabled}
+          remoteUsers={remoteUsers}
+          meetingHostId={dummyUser.id}
+        />
+
+
       </div>
+        {/* Bottom Floating Control Bar */}
+
+        <ControlBar
+          roomId={meetingId || dummyMeetingDetails.meetingId}
+          audioEnabled={audioEnabled}
+          videoEnabled={videoEnabled}
+          onToggleAudio={toggleAudio}
+          onToggleVideo={toggleVideo}
+          onToggleChat={toggleChat}
+          onToggleParticipants={() => setIsParticipantsOpen((prev) => !prev)}
+          isChatOpen={isChatOpen}
+          isParticipantsOpen={isParticipantsOpen}
+          unreadCount={unreadCount}
+          participantCount={1 + remoteUsers.length}
+          isHost={isHost}
+          onLeave={handleLeave}
+          onEndMeeting={handleEndMeeting}
+
+      />
+      
     </div>
   );
 };

@@ -1,5 +1,6 @@
 // Dummy data & assets for frontend
 
+import type { ChatMessage } from "../types/chat";
 import type { RemoteParticipants } from "../types/user";
 
 export const dummyUser = {
@@ -220,19 +221,19 @@ export const dummyRemoteParticipants: RemoteParticipants[] = [
   },
 ];
 
-export const dummyInitialChatMessages = [
-    {
-        id: "chat_01",
-        senderId: "user_mock_002",
-        senderName: "Sarah Chen",
-        text: "Hey Alex! Can you hear me clearly?",
-        time: "02:15 PM",
-    },
-    {
-        id: "chat_02",
-        senderId: "user_mock_003",
-        senderName: "Marcus Vance",
-        text: "Loud and clear! Ready for the walkthrough.",
-        time: "02:16 PM",
-    },
+export const dummyInitialChatMessages: ChatMessage[] = [
+  {
+    id: "chat_01",
+    senderId: "user_mock_002",
+    senderName: "Sarah Chen",
+    text: "Hey Alex! Can you hear me clearly?",
+    time: "02:15 PM",
+  },
+  {
+    id: "chat_02",
+    senderId: "user_mock_003",
+    senderName: "Marcus Vance",
+    text: "Loud and clear! Ready for the walkthrough.",
+    time: "02:16 PM",
+  },
 ];
